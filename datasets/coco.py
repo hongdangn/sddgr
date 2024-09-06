@@ -132,8 +132,6 @@ class ConvertCocoPolysToMask(object):
 
         return image, target
     
-    
-
 def make_coco_transforms(image_set, fix_size=False):
 
     normalize = T.Compose([
@@ -183,24 +181,27 @@ def make_coco_transforms(image_set, fix_size=False):
 def get_paths(args, pseudo=False):
     root = Path(args.coco_path)
     gen_root = Path(args.generator_path) 
-    mode = 'instances'
 
-    if pseudo : #* pseudo generation. all adatptions are fixed to only sample dataset config
-        return {
-            "train": (gen_root / "images", gen_root / 'annotations' / 'pseudo_data.json'),
-        }
-    if args.orgcocopath: #* original generation (annotations/annotations2017train.json)
-        return {
-            "train": (root / "train2017", root / "annotations" / f'{mode}_train2017.json'),
-            "val": (root / "val2017", root / "annotations" / f'{mode}_val2017.json'),
-            "extra": (root / "train2017", root / "annotations" / f'{mode}_train2017.json'),
-        }
-    else:
-        return { #* original gneration, but other variational loading version
-            "train": (root / "train/images", root / 'train/output_json' / 'train.json'),
-            "val": (root / "test/images", root / 'test/output_json' / 'test.json'),
-            "extra": (root / "train/images", root / 'train/output_json' / 'train.json'),
-        }
+    # if pseudo : #* pseudo generation. all adatptions are fixed to only sample dataset config
+    #     return {
+    #         "train": (gen_root / "images", gen_root / 'annotations' / 'pseudo_data.json'),
+    #     }
+    # if args.orgcocopath: #* original generation (annotations/annotations2017train.json)
+
+    return {
+        "train": ("/kaggle/input/mapillary-traffic-sign-dataset/mtsd_fully_annotated_train_images/images", 
+                    "/kaggle/input/mtsd-preprocessing/train_output_file_coco.json"),
+        "val": ("/kaggle/input/mapillary-traffic-sign-dataset/mtsd_v2_fully_annotated_images.val.zip/images", 
+                "/kaggle/input/mtsd-preprocessing/val_output_file_coco.json"),
+        # "extra": (root / "train2017", root / "annotations" / f'{mode}_train2017.json'),
+    }
+
+    # else:
+    #     return { #* original gneration, but other variational loading version
+    #         "train": (root / "train/images", root / 'train/output_json' / 'train.json'),
+    #         "val": (root / "test/images", root / 'test/output_json' / 'test.json'),
+    #         # "extra": (root / "train/images", root / 'train/output_json' / 'train.json'),
+    #     }
 
 
 def build(image_set, args, img_ids=None, class_ids=None, pseudo=False):

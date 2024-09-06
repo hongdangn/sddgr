@@ -171,7 +171,7 @@ class PseudoDataset(torch.utils.data.Dataset):
         if existing_ids is not None:
             self.image_ids = [img_id for img_id in self.image_ids if img_id not in existing_ids]
         self.transform = make_coco_transforms("val")
-        self.generate_data = self.coco_loader(os.path.join(args.coco_path, "annotations/instances_val2017.json")) #* coco format
+        self.generate_data = self.coco_loader("/kaggle/input/mtsd-preprocessing/val_output_file_coco.json") #* coco format
         if regen :
             with open(pseudo_path, 'r') as f:
                 self.indicated_data = json.load(f)

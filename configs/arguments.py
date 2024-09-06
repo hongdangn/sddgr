@@ -66,18 +66,18 @@ def get_args_parser():
     parser.add_argument('--eval', action='store_true')
     parser.add_argument('--pretrained_model', default=None, type=str, nargs='+', help='resume from checkpoint')
     parser.add_argument('--pretrained_model_dir', default=None, type=str, help='test all parameters')
-    parser.add_argument('--orgcocopath', action='store_true', help='for original coco directory path')
+    parser.add_argument('--orgcocopath', default=True, action='store_true', help='for original coco directory path')
 
     #* Continual Learning 
     parser.add_argument('--start_epoch', default=0, type=int, metavar='N', help='start epoch')
     parser.add_argument('--start_task', default=0, type=int, metavar='N', help='start task, if you set the construct_replay method, \
                                                                                 so then you should set the start_task value. becuase start_task is task number of construct replay options ')
     parser.add_argument('--Task', default=2, type=int, help='The task is the number that divides the entire dataset, like a domain.') #if Task is 1, so then you could use it for normal training.
-    parser.add_argument('--Task_Epochs', default=[16], type=int, nargs='+', help='each Task epoch, e.g. 1 task is 5 of 10 epoch training.. ')
-    parser.add_argument('--Total_Classes', default=59, type=int, help='number of classes in custom COCODataset. e.g. COCO : 80 / LG : 59')
+    parser.add_argument('--Task_Epochs', default=[30], type=int, nargs='+', help='each Task epoch, e.g. 1 task is 5 of 10 epoch training.. ')
+    parser.add_argument('--Total_Classes', default=221, type=int, help='number of classes in custom COCODataset. e.g. COCO : 80 / LG : 59')
     parser.add_argument('--Total_Classes_Names', default=False, action='store_true', help="division of classes through class names (DID, PZ, VE). This option is available for LG Dataset")
     parser.add_argument('--CL_Limited', default=0, type=int, help='Use Limited Training in CL. If you choose False, you may encounter data imbalance in training.')
-    parser.add_argument('--divide_ratio', default='4040', type=str, help='Adjusting ratio of task classes. 4040 = 40:40 class; 7010 = 70:10 class; 1070 = 10:70 class')
+    parser.add_argument('--divide_ratio', default='15071', type=str, help='Adjusting ratio of task classes. 4040 = 40:40 class; 7010 = 70:10 class; 1070 = 10:70 class')
 
     #* Replay strategy
     parser.add_argument('--Rehearsal', default=False, action='store_true', help="use Rehearsal strategy in diverse CL method")
