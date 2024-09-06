@@ -350,33 +350,17 @@ def data_setting(ratio: str, random_setting: bool=False):
     def flatten_list(nested_list):
         return [item for sublist in nested_list for item in sublist]
     
-    total_classes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, \
-                    11, 13, 14, 15, 16, 17, 18, 19, 20, \
-                    21, 22, 23, 24, 25, 27, 28, 31, 32, \
-                    33, 34, 35, 36, 37, 38, 39, 40, 41, \
-                    42, 43, 44, 46, 47, 48, 49, 50, 51, \
-                    52, 53, 54, 55, 56, 57, 58, 59, 60, \
-                    61, 62, 63, 64, 65, 67, 70, 72, 73, \
-                    74, 75, 76, 77, 78, 79, 80, 81, 82, \
-                    84, 85, 86, 87, 88, 89, 90]
+    total_classes = list(range(0, 221))
     
     # Initialize Divided_Classes
     Divided_Classes = [
-        list(range(1, 46)),  # 45 classes
-        list(range(46, 56)), # 10 classes
-        list(range(56, 66)), # 10 classes
-        list(range(66, 80)), # 14 classes
-        list(range(80, 91))  # 11 classes
+        list(range(0, 150)),  # 45 classes
+        list(range(150, 221))
     ]
     
     ratio_to_classes = {
-            '4040': [Divided_Classes[0], flatten_list(Divided_Classes[1:])],
-            '402020': [Divided_Classes[0], flatten_list(Divided_Classes[1:3]), flatten_list(Divided_Classes[3:])],
-            '4010101010': Divided_Classes,
-            '7010': [flatten_list(Divided_Classes[:-1]), Divided_Classes[-1]],
-            '8000': [flatten_list(Divided_Classes), []],
-            '1010': [list(range(1, 11)), list(range(11, 22))],
-            '20': [list(range(1, 22))]
+        '15071': [flatten_list(Divided_Classes[:-1]), Divided_Classes[-1]],
+
     }
     Divided_Classes_detail = ratio_to_classes.get(ratio, total_classes)
 
