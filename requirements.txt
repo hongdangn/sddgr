@@ -13,7 +13,6 @@ importlib-metadata==6.7.0
 joblib==1.3.1
 kiwisolver==1.4.4
 matplotlib==3.5.3
-multiscaledeformableattention==1.0
 networkx==2.6.3
 nvidia-ml-py==11.525.112
 opencv-python==4.8.0.74
