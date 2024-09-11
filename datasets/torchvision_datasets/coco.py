@@ -15,6 +15,7 @@ import os
 import os.path
 import tqdm
 from io import BytesIO
+from termcolor import cprint
 
 class CocoDetection(VisionDataset):
     """`MS Coco Detection <http://mscoco.org/dataset/#detections-challenge2016>`_ Dataset.
@@ -45,6 +46,10 @@ class CocoDetection(VisionDataset):
                 img_ids = self.coco.getImgIds(catIds= c_idx)
                 self.ids.extend(img_ids)
             self.ids = list(set(self.ids))
+        
+        cprint(f"CURRENT CLASSES: {self.class_ids}\nLEN IDS: {len(self.ids)}", 
+               "cyan",
+               "on_yellow")
         
         #print(f"{dist.get_rank()} here image id list counts : {self.ids}")
         self.cache_mode = cache_mode

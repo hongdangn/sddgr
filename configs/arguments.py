@@ -73,7 +73,7 @@ def get_args_parser():
     parser.add_argument('--start_task', default=0, type=int, metavar='N', help='start task, if you set the construct_replay method, \
                                                                                 so then you should set the start_task value. becuase start_task is task number of construct replay options ')
     parser.add_argument('--Task', default=2, type=int, help='The task is the number that divides the entire dataset, like a domain.') #if Task is 1, so then you could use it for normal training.
-    parser.add_argument('--Task_Epochs', default=[30], type=int, nargs='+', help='each Task epoch, e.g. 1 task is 5 of 10 epoch training.. ')
+    parser.add_argument('--Task_Epochs', default=[50], type=int, nargs='+', help='each Task epoch, e.g. 1 task is 5 of 10 epoch training.. ')
     parser.add_argument('--Total_Classes', default=221, type=int, help='number of classes in custom COCODataset. e.g. COCO : 80 / LG : 59')
     parser.add_argument('--Total_Classes_Names', default=False, action='store_true', help="division of classes through class names (DID, PZ, VE). This option is available for LG Dataset")
     parser.add_argument('--CL_Limited', default=0, type=int, help='Use Limited Training in CL. If you choose False, you may encounter data imbalance in training.')
@@ -110,7 +110,7 @@ def get_args_parser():
     parser.add_argument('--num_debug_dataset', default=10, type=int) # 디버그 데이터셋 개수
 
     #* eval
-    parser.add_argument('--all_data', default=False, action='store_true', help ="save your model output image") # I think this option is depreciated, so temporarily use for 79 path, and modify later ... .
+    parser.add_argument('--all_data', default=True, action='store_true', help ="save your model output image") # I think this option is depreciated, so temporarily use for 79 path, and modify later ... .
     parser.add_argument('--FPP', default=False, action='store_true', help="Forgetting metrics")
     parser.add_argument('--Test_Classes', default=45, type=int, help="2 task eval(coco) : T1=45 / T2=90, 3task eval(coco) T1=30 T2=60 T3=90\
                                                                       this value be used to config model architecture in the adequate task")
@@ -154,7 +154,7 @@ def get_args_parser():
 
 def deform_detr_parser(parser):
     # Variants of Deformable DETR
-    parser.add_argument('--with_box_refine', default=False, action='store_true')
+    parser.add_argument('--with_box_refine', default=True, action='store_true')
 
     # lr
     parser.add_argument('--lr', default=2e-4, type=float)

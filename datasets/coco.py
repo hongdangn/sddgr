@@ -204,9 +204,7 @@ def get_paths(args, pseudo=False):
     #     }
 
 
-def build(image_set, args, img_ids=None, class_ids=None, pseudo=False):
-    assert Path(args.coco_path).exists(), f'provided COCO path {args.coco_path} does not exist'
-    
+def build(image_set, args, img_ids=None, class_ids=None, pseudo=False):    
     PATHS = get_paths(args, pseudo)
     
     print(args.coco_path)

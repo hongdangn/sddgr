@@ -112,7 +112,7 @@ def main(args):
             is_task_changed = False
         
         dataset_train, data_loader_train, sampler_train, list_CC = generate_dataset(first_training, task_idx, args, pipeline)
-        
+
         # Incremental training for each epoch
         pipeline.set_task_epoch(args, idx)
         pipeline.incremental_train_epoch(task_idx=task_idx, last_task=last_task, dataset_train=dataset_train,

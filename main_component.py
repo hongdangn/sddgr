@@ -12,7 +12,7 @@ from custom_utils import *
 from custom_prints import *
 from custom_buffer_manager import *
 
-from datasets import get_coco_api_from_dataset
+from datasets import build_dataset, get_coco_api_from_dataset
 from engine import evaluate, train_one_epoch, pseudo_process
 from models import get_models
 from glob import glob
@@ -45,6 +45,8 @@ class TrainingPipeline:
         self.set_directory(args)
         self.args = args
         self.device = torch.device(args.device)
+        # self.data_loader_val = data_loader_val
+        # self.base_ds_val = base_ds_val
         self.Divided_Classes, self.dataset_name, self.start_epoch, self.start_task, self.tasks = self._incremental_setting()
         if self.args.eval:
             self.args.start_task = 0
@@ -343,7 +345,21 @@ class TrainingPipeline:
         args = self.args
         self.list_cc = list_CC
         T_epochs = args.Task_Epochs[0] if isinstance(args.Task_Epochs, list) else args.Task_Epochs
+
+        target_classes = list(range(0, 221))
+        print(colored(f"Current classes for evaluation: {target_classes}", "blue", "on_yellow"))
         
+        val_dataset = build_dataset(image_set='val', args=args, class_ids=target_classes)
+        
+        val_sampler = samplers.DistributedSampler(val_dataset) if self.args.is_distributed else torch.utils.data.SequentialSampler(val_dataset)
+        
+        val_loader = DataLoader(
+            val_dataset, args.batch_size, sampler=val_sampler,
+            drop_last=False, collate_fn=utils.collate_fn, num_workers=args.num_workers,
+            pin_memory=True, prefetch_factor=args.prefetch)
+        
+        base_ds_val = get_coco_api_from_dataset(val_dataset)
+                
         for epoch in range(self.start_epoch, T_epochs): 
             if args.distributed:
                 sampler_train.set_epoch(epoch) 
@@ -358,6 +374,11 @@ class TrainingPipeline:
             
             #* set a lr scheduler.
             self.lr_scheduler.step()
+
+            # eval each epoch
+
+            evaluate(self.model, self.criterion, self.postprocessors, val_loader, base_ds_val, self.device, args.output_dir, self.DIR, args)
+
 
             #* Save model each epoch
             save_model_params(model_without_ddp=self.model_without_ddp, optimizer=self.optimizer, lr_scheduler=self.lr_scheduler,
