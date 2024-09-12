@@ -47,7 +47,7 @@ class CocoDetection(VisionDataset):
                 self.ids.extend(img_ids)
             self.ids = list(set(self.ids))
         
-        cprint(f"CURRENT CLASSES: {self.class_ids}\nLEN IDS: {len(self.ids)}", 
+        cprint(f"CURRENT CLASSES: {sorted(self.class_ids)}\nLEN IDS: {len(self.ids)}", 
                "cyan")
         
         #print(f"{dist.get_rank()} here image id list counts : {self.ids}")
