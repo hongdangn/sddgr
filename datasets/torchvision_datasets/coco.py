@@ -48,8 +48,7 @@ class CocoDetection(VisionDataset):
             self.ids = list(set(self.ids))
         
         cprint(f"CURRENT CLASSES: {self.class_ids}\nLEN IDS: {len(self.ids)}", 
-               "cyan",
-               "on_yellow")
+               "cyan")
         
         #print(f"{dist.get_rank()} here image id list counts : {self.ids}")
         self.cache_mode = cache_mode
