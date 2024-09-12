@@ -159,7 +159,7 @@ def deform_detr_parser(parser):
     # lr
     parser.add_argument('--lr', default=2e-4, type=float)
     parser.add_argument('--lr_backbone', default=2e-5, type=float)
-    parser.add_argument('--batch_size', default=4, type=int)
+    parser.add_argument('--batch_size', default=2, type=int)
     parser.add_argument('--epochs', default=50, type=int)
     parser.add_argument('--lr_drop', default=40, type=int)
     parser.add_argument('--lr_drop_epochs', default=None, type=int, nargs='+')

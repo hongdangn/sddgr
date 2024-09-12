@@ -46,6 +46,8 @@ def _common_training(args, epo, idx, task_idx, last_task, count, sum_loss,
     model.train()
     criterion.train()
 
+    teacher_attn = None
+
     #* teacher distllation
     if last_task and args.Distill:
         teacher_model.eval()

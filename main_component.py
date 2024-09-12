@@ -144,7 +144,7 @@ class TrainingPipeline:
     def update_class(self, task_idx):
         if self.args.Branch_Incremental is False:
             # Because original classes(whole classes) is 60 to LG, COCO is 91.
-            num_classes = 60 if self.args.LG else 91
+            num_classes = 221
             current_class = None
         else:
             idx = len(self.Divided_Classes) if self.args.LG and self.args.eval else task_idx+1
@@ -347,11 +347,11 @@ class TrainingPipeline:
         T_epochs = args.Task_Epochs[0] if isinstance(args.Task_Epochs, list) else args.Task_Epochs
 
         target_classes = list(range(0, 221))
-        print(colored(f"Current classes for evaluation: {target_classes}", "blue", "on_yellow"))
+        print(colored(f"Current classes for evaluation: {target_classes}", "blue"))
         
         val_dataset = build_dataset(image_set='val', args=args, class_ids=target_classes)
         
-        val_sampler = samplers.DistributedSampler(val_dataset) if self.args.is_distributed else torch.utils.data.SequentialSampler(val_dataset)
+        val_sampler = samplers.DistributedSampler(val_dataset) if self.args.distributed else torch.utils.data.SequentialSampler(val_dataset)
         
         val_loader = DataLoader(
             val_dataset, args.batch_size, sampler=val_sampler,
