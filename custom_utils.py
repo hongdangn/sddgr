@@ -11,6 +11,7 @@ from custom_prints import over_label_checker, check_components
 from termcolor import colored
 from torch.utils.data import DataLoader
 from datasets import build_dataset, get_coco_api_from_dataset
+from pathlib import Path
 
 
 def new_dataLoader(saved_dict, args):
@@ -70,26 +71,20 @@ def teacher_model_freeze(model):
 def save_model_params(model_without_ddp, optimizer, lr_scheduler, args, output_dir, task_index, total_tasks, epoch=-1):
     """Save model parameters for each task."""
     
-    checkpoint_dir = os.path.join(output_dir, 'checkpoints')
-    
-    # Create directory if it doesn't exist
-    os.makedirs(checkpoint_dir, exist_ok=True)
-    
-    # Determine the checkpoint file name based on task and epoch
-    checkpoint_filename = f'cp_{total_tasks:02}_{task_index + 1:02}'
-    if epoch != -1:
-        checkpoint_filename += f'_{epoch}'
-    checkpoint_filename += '.pth'
-    
-    checkpoint_path = os.path.join(checkpoint_dir, checkpoint_filename)
+    this_phase_output_dir = args.output_dir + '/phase_'+str(task_index)
+    if not os.path.exists(this_phase_output_dir):
+        os.mkdir(this_phase_output_dir)
+
+    output_dir = Path(this_phase_output_dir)
     
     # Save model and other states
-    utils.save_on_master({
-        'model': model_without_ddp.state_dict(),
-        'optimizer': optimizer.state_dict(),
-        'lr_scheduler': lr_scheduler.state_dict(),
-        'args': args,
-    }, checkpoint_path)
+    if epoch != -1:
+        utils.save_on_master({
+            'model': model_without_ddp.state_dict(),
+            'optimizer': optimizer.state_dict(),
+            'lr_scheduler': lr_scheduler.state_dict(),
+            'args': args,
+        }, output_dir / f"ckpt_e{epoch}.path")
 
 
 import torch.distributed as dist
