@@ -2,3 +2,5 @@ pycocotools
 omegaconf
 einops
 clip
+transformers
+albumentations
