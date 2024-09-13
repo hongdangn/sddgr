@@ -189,10 +189,10 @@ def get_paths(args, pseudo=False):
     # if args.orgcocopath: #* original generation (annotations/annotations2017train.json)
 
     return {
-        "train": ("/kaggle/input/mapillary-traffic-sign-dataset/mtsd_fully_annotated_train_images/images", 
-                    "/kaggle/input/mtsd-preprocessing/train_output_file_coco.json"),
-        "val": ("/kaggle/input/mapillary-traffic-sign-dataset/mtsd_v2_fully_annotated_images.val.zip/images", 
-                "/kaggle/input/mtsd-preprocessing/val_output_file_coco.json"),
+        "train": ("/mnt/thanhpd/MTSD/mtsd_fully_annotated_train_images/images", 
+                    "/mnt/thanhpd/code/mtsd_cl/CL_rtdetr/train_output_file_coco.json"),
+        "val": ("/mnt/thanhpd/MTSD/mtsd_v2_fully_annotated_images.val.zip/images", 
+                "/mnt/thanhpd/code/mtsd_cl/CL_rtdetr/val_output_file_coco.json"),
         # "extra": (root / "train2017", root / "annotations" / f'{mode}_train2017.json'),
     }
 
