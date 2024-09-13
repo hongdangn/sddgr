@@ -84,7 +84,7 @@ def save_model_params(model_without_ddp, optimizer, lr_scheduler, args, output_d
             'optimizer': optimizer.state_dict(),
             'lr_scheduler': lr_scheduler.state_dict(),
             'args': args,
-        }, output_dir / f"ckpt_e{epoch}.path")
+        }, output_dir / f"ckpt_e{epoch}.pth")
 
 
 import torch.distributed as dist
