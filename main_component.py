@@ -393,10 +393,10 @@ class TrainingPipeline:
         # self.load_replay.extend(self.Divided_Classes[task_idx])
         
         # #* distillation task and reload new teacher model.
-        # self.teacher_model = self.model_without_ddp
+        self.teacher_model = self.model_without_ddp
         # self.teacher_model = teacher_model_freeze(self.teacher_model)
 
-        # if utils.get_world_size() > 1: dist.barrier()
+        if utils.get_world_size() > 1: dist.barrier()
 
     # No incremental learning process    
     def only_one_task_training(self):
