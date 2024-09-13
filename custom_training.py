@@ -46,6 +46,8 @@ def _common_training(args, epo, idx, task_idx, last_task, count, sum_loss,
     model.train()
     criterion.train()
 
+    samples.to(device)
+
     teacher_attn = None
 
     #* teacher distllation

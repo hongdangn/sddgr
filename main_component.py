@@ -58,6 +58,18 @@ class TrainingPipeline:
         self.load_replay, self.rehearsal_classes = self._load_replay_buffer()
         self.DIR = os.path.join(self.output_dir, 'mAP_TEST.txt')
         self.Task_Epochs = args.Task_Epochs
+
+        target_classes = list(range(0, 221))        
+        val_dataset = build_dataset(image_set='val', args=args, class_ids=target_classes)
+        
+        val_sampler = samplers.DistributedSampler(val_dataset) if self.args.distributed else torch.utils.data.SequentialSampler(val_dataset)
+        
+        self.val_loader = DataLoader(
+            val_dataset, args.batch_size, sampler=val_sampler,
+            drop_last=False, collate_fn=utils.collate_fn, num_workers=args.num_workers,
+            pin_memory=True, prefetch_factor=args.prefetch)
+        
+        self.base_ds_val = get_coco_api_from_dataset(val_dataset)
     
     def set_directory(self, args):
         '''
@@ -345,20 +357,6 @@ class TrainingPipeline:
         args = self.args
         self.list_cc = list_CC
         T_epochs = args.Task_Epochs[0] if isinstance(args.Task_Epochs, list) else args.Task_Epochs
-
-        target_classes = list(range(0, 221))
-        print(colored(f"Current classes for evaluation: {target_classes}", "blue"))
-        
-        val_dataset = build_dataset(image_set='val', args=args, class_ids=target_classes)
-        
-        val_sampler = samplers.DistributedSampler(val_dataset) if self.args.distributed else torch.utils.data.SequentialSampler(val_dataset)
-        
-        val_loader = DataLoader(
-            val_dataset, args.batch_size, sampler=val_sampler,
-            drop_last=False, collate_fn=utils.collate_fn, num_workers=args.num_workers,
-            pin_memory=True, prefetch_factor=args.prefetch)
-        
-        base_ds_val = get_coco_api_from_dataset(val_dataset)
                 
         for epoch in range(self.start_epoch, T_epochs): 
             if args.distributed:
@@ -377,7 +375,7 @@ class TrainingPipeline:
 
             # eval each epoch
 
-            evaluate(self.model, self.criterion, self.postprocessors, val_loader, base_ds_val, self.device, args.output_dir, self.DIR, args)
+            evaluate(self.model, self.criterion, self.postprocessors, self.val_loader, self.base_ds_val, self.device, args.output_dir, self.DIR, args)
 
 
             #* Save model each epoch
