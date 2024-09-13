@@ -374,8 +374,8 @@ class TrainingPipeline:
             self.lr_scheduler.step()
 
             # eval each epoch
-
-            evaluate(self.model, self.criterion, self.postprocessors, self.val_loader, self.base_ds_val, self.device, args.output_dir, self.DIR, args)
+            if task_idx:
+                evaluate(self.model, self.criterion, self.postprocessors, self.val_loader, self.base_ds_val, self.device, args.output_dir, self.DIR, args)
 
 
             #* Save model each epoch
@@ -389,14 +389,14 @@ class TrainingPipeline:
         save_model_params(model_without_ddp=self.model_without_ddp, optimizer=self.optimizer, lr_scheduler=self.lr_scheduler,
                         args=args, output_dir=args.output_dir, task_index=task_idx, total_tasks=int(self.tasks))
         
-        #TODO: maybe delete the code here
-        self.load_replay.extend(self.Divided_Classes[task_idx])
+        # #TODO: maybe delete the code here
+        # self.load_replay.extend(self.Divided_Classes[task_idx])
         
-        #* distillation task and reload new teacher model.
-        self.teacher_model = self.model_without_ddp
-        self.teacher_model = teacher_model_freeze(self.teacher_model)
+        # #* distillation task and reload new teacher model.
+        # self.teacher_model = self.model_without_ddp
+        # self.teacher_model = teacher_model_freeze(self.teacher_model)
 
-        if utils.get_world_size() > 1: dist.barrier()
+        # if utils.get_world_size() > 1: dist.barrier()
 
     # No incremental learning process    
     def only_one_task_training(self):
