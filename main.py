@@ -41,7 +41,8 @@ def main(args):
 
     #* Evaluation mode
     if args.eval:
-        pipeline.evaluation_only_mode()
+        pipeline.eval_from_ckpt()
+        # pipeline.evaluation_only_mode()
         return
     
     #* image generation process

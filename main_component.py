@@ -95,28 +95,6 @@ class TrainingPipeline:
     def make_branch(self, task_idx, args, is_init=False):
         self.update_class(task_idx)
         
-        ## 고려하고 있는 case ##
-        # case 1) start_task=0부터 시작해서 차근차근 task를 진행하는 경우
-        #    이 경우는 task가 끝날 때마다 해당 task의 weight가 output_dir에 저장되므로,
-        #    previous_weight를 output_dir에서 불러옴
-        #
-        # case 2) start_task=1, args.Rehearsal_file에서 task 0의 데이터 불러오는 경우 (전체 task 2개)
-        #    이 경우는 previous_weight가 현재 output_dir에 없음
-        #    따라서 args.pretrained_model에서 previous_weight를 불러옴
-        #
-        # case 3) start_task=1, args.Rehearsal_file에서 task 0의 데이터 불러오는 경우 (전체 task 3개 이상)
-        #    이 경우, 초기에는 args.pretrained_model에서 previous_weight를 불러와야 하지만,
-        #    task가 변할 경우 args.output_dir에서 previous_weight를 불러와야 함
-        #
-        # case 1, 2, 3를 모두 충족시키는 방법)
-        #    main_component에서 make_branch가 참조되는 경우 is_init을 True로, main에서 참조되는 경우 False로 설정함.
-        #    case 1의 경우는 어차피 args.pretrained_model이 선언되어 있지 않기 때문에 is_init이 항상 False임
-        #    case 2,3의 경우 args.pretrained_model이 존재하기 때문에, is_init이 True인 경우와 False인 경우가 둘 다 존재함
-        #        1) is_init==True
-        #              해당 경우는 args.pretrained_model에서 previous_weight를 불러옴
-        #        2) is_init==False
-        #              해당 경우는 args.output_dir에서 previous_weight를 불러옴
-        
         if is_init:
             weight_path = args.pretrained_model[0]
         else:
@@ -296,6 +274,20 @@ class TrainingPipeline:
 
         return load_replay, rehearsal_classes
 
+    def eval_from_ckpt(self):
+        args = self.args
+        print(colored(f"evaluation only mode start !!", "red"))   
+
+        if args.pretrained_model is not None:
+            checkpoint = torch.load(args.pretrained_model, map_location='cpu')
+            self.model.load_state_dict(checkpoint['model'])       
+
+        self.model_without_ddp = self.model
+        n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
+        print('number of params:', n_parameters)   
+
+        evaluate(self.model, self.criterion, self.postprocessors, self.data_loader_val, self.base_ds, self.device, args.output_dir, self.DIR, args)
+             
 
     def evaluation_only_mode(self,):
         '''evaluation mode'''
