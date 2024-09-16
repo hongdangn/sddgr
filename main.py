@@ -43,7 +43,7 @@ def main(args):
     if args.eval:
         pipeline.eval_from_ckpt()
         # pipeline.evaluation_only_mode()
-        return
+        # return
     
     #* image generation process
     if args.pseudo_generation:

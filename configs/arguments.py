@@ -63,7 +63,7 @@ def get_args_parser():
     parser.add_argument('--num_workers', default=16, type=int)
     parser.add_argument('--prefetch', default=2, type=int)
     parser.add_argument('--cache_mode', default=False, action='store_true', help='whether to cache images on memory')
-    parser.add_argument('--eval', default=0, type=int)
+    parser.add_argument('--eval', default=1, type=int)
     parser.add_argument('--pretrained_model', default=None, type=str, nargs='+', help='resume from checkpoint')
     parser.add_argument('--pretrained_model_dir', default=None, type=str, help='test all parameters')
     parser.add_argument('--orgcocopath', default=True, action='store_true', help='for original coco directory path')
