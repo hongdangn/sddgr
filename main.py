@@ -40,7 +40,7 @@ def main(args):
     args = pipeline.args
 
     #* Evaluation mode
-    if args.eval:
+    if args.eval is not None:
         pipeline.eval_from_ckpt()
         # pipeline.evaluation_only_mode()
         return
