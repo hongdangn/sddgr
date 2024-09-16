@@ -43,7 +43,7 @@ def main(args):
     if args.eval:
         pipeline.eval_from_ckpt()
         # pipeline.evaluation_only_mode()
-        return
+        # return
     
     #* image generation process
     if args.pseudo_generation:
@@ -105,6 +105,8 @@ def main(args):
     
     pipeline.load_ddp_state()
     for idx, task_idx in enumerate(range(pipeline.start_task, pipeline.tasks)):
+        if idx == 0:
+            continue
         last_task = (task_idx+1 == pipeline.tasks)
         first_training = (task_idx == 0)
 
