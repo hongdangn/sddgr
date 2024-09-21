@@ -159,7 +159,7 @@ class TrainingPipeline:
 
         pre_model, _, _ = get_models(args.model_name, args, self.num_classes, self.current_class)
         teacher_model = load_model_params("teacher", pre_model, dir=args.pre_model)
-
+        
         model, criterion, postprocessors = get_models(args.model_name, args, self.num_classes, self.current_class)
         model = copy.deepcopy(teacher_model)
         model_dict = model.state_dict()
