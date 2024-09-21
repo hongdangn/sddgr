@@ -162,10 +162,10 @@ class TrainingPipeline:
 
         model, criterion, postprocessors = get_models(args.model_name, args, self.num_classes, self.current_class)
         model = copy.deepcopy(teacher_model)
+        model_dict = model.state_dict()
 
         for name, params in model.named_parameters():
-            if not params.requires_grad:
-                model[name].requires_grad = True
+            params.requires_grad = True
                 
         model_without_ddp = model
 
