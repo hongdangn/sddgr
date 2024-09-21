@@ -30,8 +30,8 @@ def new_dataLoader(saved_dict, args):
 def load_model_params(mode, model: model, dir: str = None, Branch_Incremental = False):
     new_model_dict = model.state_dict()
     
-    if isinstance(dir, list):
-        dir = dir[0]
+    # if isinstance(dir, list):
+    #     dir = dir[0]
     #temp dir
     checkpoint = torch.load(dir)
     pretraind_model = checkpoint["model"]

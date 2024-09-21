@@ -63,7 +63,7 @@ def get_args_parser():
     parser.add_argument('--num_workers', default=16, type=int)
     parser.add_argument('--prefetch', default=2, type=int)
     parser.add_argument('--cache_mode', default=False, action='store_true', help='whether to cache images on memory')
-    parser.add_argument('--eval', default=1, type=int)
+    parser.add_argument('--eval', default=0, type=int)
     parser.add_argument('--pretrained_model', default=None, type=str, nargs='+', help='resume from checkpoint')
     parser.add_argument('--pretrained_model_dir', default=None, type=str, help='test all parameters')
     parser.add_argument('--orgcocopath', default=True, action='store_true', help='for original coco directory path')
@@ -80,10 +80,10 @@ def get_args_parser():
     parser.add_argument('--divide_ratio', default='15071', type=str, help='Adjusting ratio of task classes. 4040 = 40:40 class; 7010 = 70:10 class; 1070 = 10:70 class')
 
     #* Replay strategy
-    parser.add_argument('--Rehearsal', default=True, action='store_true', help="use Rehearsal strategy in diverse CL method")
-    parser.add_argument('--AugReplay', default=True, action='store_true', help="use Our augreplay strategy in step 2")
-    parser.add_argument('--MixReplay', default=True, action='store_true', help="1:1 Mix replay solution, First Circular Training. Second Original Training")
-    parser.add_argument('--Mosaic', default=True, action='store_true', help="mosaic augmentation for autonomous training")
+    parser.add_argument('--Rehearsal', default=False, action='store_true', help="use Rehearsal strategy in diverse CL method")
+    parser.add_argument('--AugReplay', default=False, action='store_true', help="use Our augreplay strategy in step 2")
+    parser.add_argument('--MixReplay', default=False, action='store_true', help="1:1 Mix replay solution, First Circular Training. Second Original Training")
+    parser.add_argument('--Mosaic', default=False, action='store_true', help="mosaic augmentation for autonomous training")
     parser.add_argument('--Rehearsal_file', default=None, type=str)
     parser.add_argument('--Construct_Replay', default=False, action='store_true', help="For cunnstructing replay dataset")
     
@@ -98,12 +98,13 @@ def get_args_parser():
                                                                    Augreplay ER")
     
     #* CL Strategy
-    parser.add_argument('--Fake_Query', default=True, action='store_true', help="retaining previous task target through predict query")
-    parser.add_argument('--Distill', default=True, action='store_true', help="retaining previous task target through predict query")
+    parser.add_argument('--Fake_Query', default=False, action='store_true', help="retaining previous task target through predict query")
+    parser.add_argument('--Distill', default=False, action='store_true', help="retaining previous task target through predict query")
     parser.add_argument('--Branch_Incremental', default=False, action='store_true', help="MLP or something incremental with class")
     parser.add_argument('--teacher_model', default=None, type=str)
     parser.add_argument('--Continual_Batch_size', default=2, type=int, help='continual batch traiing method')
     parser.add_argument('--fisher_model', default=None, type=str, help='fisher model path')
+    parser.add_argument('--pre_model', default=None, type=str)
     
     #* 정완 디버그
     parser.add_argument('--debug', default=False, action='store_true')

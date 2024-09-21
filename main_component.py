@@ -150,20 +150,31 @@ class TrainingPipeline:
         args = self.args
         self.update_class(task_idx)
 
-        model, criterion, postprocessors = get_models(args.model_name, args, self.num_classes, self.current_class)
         
-        if args.Distill or args.pseudo_labeling or args.Fake_Query:
-            pre_model, _, _ = get_models(args.model_name, args, self.num_classes, self.current_class)
+        # if args.Distill or args.pseudo_labeling or args.Fake_Query:
+        #     pre_model, _, _ = get_models(args.model_name, args, self.num_classes, self.current_class)
     
-        if args.pretrained_model is not None and not args.eval:
-            model = load_model_params("main", model, args.pretrained_model, args.Branch_Incremental)
+        # if args.pretrained_model is not None and not args.eval:
+        #     model = load_model_params("main", model, args.pretrained_model, args.Branch_Incremental)
+
+        pre_model, _, _ = get_models(args.model_name, args, self.num_classes, self.current_class)
+        teacher_model = load_model_params("teacher", pre_model, dir=args.pre_model)
+
+        model, criterion, postprocessors = get_models(args.model_name, args, self.num_classes, self.current_class)
+        model = copy.deepcopy(teacher_model)
+
+        for name, params in model.named_parameters():
+            if not params.requires_grad:
+                model[name].requires_grad = True
+                
         model_without_ddp = model
+
+        print("teacher model load complete !!!!")
         
-        teacher_model = None
-        if args.Distill or args.pseudo_labeling or args.Fake_Query:
-            teacher_model = load_model_params("teacher", pre_model, args.teacher_model, args.Branch_Incremental)
-            print(f"teacher model load complete !!!!")
-            return model, model_without_ddp, criterion, postprocessors, teacher_model
+        # if args.Distill or args.pseudo_labeling or args.Fake_Query:
+        #     teacher_model = load_model_params("teacher", pre_model, args.teacher_model, args.Branch_Incremental)
+        #     print(f"teacher model load complete !!!!")
+        #     return model, model_without_ddp, criterion, postprocessors, teacher_model
             
         return model, model_without_ddp, criterion, postprocessors, teacher_model
     
@@ -274,20 +285,52 @@ class TrainingPipeline:
 
         return load_replay, rehearsal_classes
 
-    def eval_from_ckpt(self):
+    def train_task_1(self, task_idx, last_task, dataset_train, data_loader_train, sampler_train, list_CC, first_training=False):
+        print(colored(f"Start training task 1.... !!", "red"))        
+
         args = self.args
-        print(colored(f"evaluation only mode start !!", "red"))   
+        self.list_cc = list_CC
+        T_epochs = args.Task_Epochs[0] if isinstance(args.Task_Epochs, list) else args.Task_Epochs
+                
+        for epoch in range(self.start_epoch, T_epochs): 
+            if args.distributed:
+                sampler_train.set_epoch(epoch) 
+            print(colored(f"task id : {task_idx} / {self.tasks-1}", "blue"))
+            print(colored(f"each epoch id : {epoch} , Dataset length : {len(dataset_train)}, current classes :{list_CC}", "blue"))
+            print(colored(f"Task is Last : {last_task} \t task is first : {first_training}", "blue"))
+            
+            #* Training process
+            train_one_epoch(args, task_idx, last_task, epoch, self.model, self.teacher_model, self.criterion, dataset_train,
+                            data_loader_train, self.optimizer, self.lr_scheduler,
+                            self.device, self.dataset_name, list_CC, self.rehearsal_classes, first_training)
+            
+            #* set a lr scheduler.
+            self.lr_scheduler.step()
 
-        if args.pretrained_model is not None:
-            checkpoint = torch.load(args.pretrained_model, map_location='cpu')
-            self.model.load_state_dict(checkpoint['model'])       
+            # eval each epoch
+            if task_idx:
+                evaluate(self.model, self.criterion, self.postprocessors, self.val_loader, self.base_ds_val, self.device, args.output_dir, self.DIR, args)
 
-        self.model_without_ddp = self.model
-        n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
-        print('number of params:', n_parameters)   
 
-        evaluate(self.model, self.criterion, self.postprocessors, self.data_loader_val, self.base_ds, self.device, args.output_dir, self.DIR, args)
-             
+            #* Save model each epoch
+            save_model_params(model_without_ddp=self.model_without_ddp, optimizer=self.optimizer, lr_scheduler=self.lr_scheduler,
+                            args=args, output_dir=args.output_dir, task_index=task_idx, total_tasks=int(self.tasks), epoch=epoch)
+        
+        #* If task change, training epoch should be zero.
+        self.start_epoch = 0
+        
+        #* for task information at end training course
+        save_model_params(model_without_ddp=self.model_without_ddp, optimizer=self.optimizer, lr_scheduler=self.lr_scheduler,
+                        args=args, output_dir=args.output_dir, task_index=task_idx, total_tasks=int(self.tasks))
+        
+        # #TODO: maybe delete the code here
+        # self.load_replay.extend(self.Divided_Classes[task_idx])
+        
+        # #* distillation task and reload new teacher model.
+        self.teacher_model = self.model_without_ddp
+        # self.teacher_model = teacher_model_freeze(self.teacher_model)
+
+        if utils.get_world_size() > 1: dist.barrier()             
 
     def evaluation_only_mode(self,):
         '''evaluation mode'''

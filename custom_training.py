@@ -51,11 +51,11 @@ def _common_training(args, epo, idx, task_idx, last_task, count, sum_loss,
     teacher_attn = None
 
     #* teacher distllation
-    if last_task and args.Distill:
-        teacher_model.eval()
-        teacher_model.to(device)
-        teacher_attn = compute_attn_weight(teacher_model, model, samples, device, ex_device)
-        teacher_model.to("cpu")
+    # if last_task and args.Distill:
+    teacher_model.eval()
+    teacher_model.to(device)
+    teacher_attn = compute_attn_weight(teacher_model, model, samples, device, ex_device)
+    teacher_model.to("cpu")
 
     #* fake query selection(pseudo labeling)
     if args.Fake_Query:

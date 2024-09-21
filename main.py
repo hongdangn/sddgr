@@ -40,8 +40,9 @@ def main(args):
     args = pipeline.args
 
     #* Evaluation mode
-    if args.eval:
-        pipeline.eval_from_ckpt()
+    # if args.eval:
+    #     pipeline.eval_from_ckpt()
+    #     reutr
         # pipeline.evaluation_only_mode()
         # return
     
@@ -106,6 +107,7 @@ def main(args):
     pipeline.load_ddp_state()
     for idx, task_idx in enumerate(range(pipeline.start_task, pipeline.tasks)):
         if idx == 0:
+            # pipeline.eval_from_ckpt()
             continue
         last_task = (task_idx+1 == pipeline.tasks)
         first_training = (task_idx == 0)
@@ -118,7 +120,7 @@ def main(args):
 
         # Incremental training for each epoch
         pipeline.set_task_epoch(args, idx)
-        pipeline.incremental_train_epoch(task_idx=task_idx, last_task=last_task, dataset_train=dataset_train,
+        pipeline.train_task_1(task_idx=task_idx, last_task=last_task, dataset_train=dataset_train,
                                         data_loader_train=data_loader_train, sampler_train=sampler_train,
                                         list_CC=list_CC, first_training=first_training)
         
